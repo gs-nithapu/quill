@@ -1,6 +1,7 @@
 import EventEmitter from 'eventemitter3';
 import instances from './instances';
 import logger from './logger';
+import { getContext } from './utils';
 
 const debug = logger('quill:events');
 const EVENTS = ['selectionchange', 'mousedown', 'mouseup', 'click'];
@@ -15,6 +16,18 @@ EVENTS.forEach(eventName => {
     });
   });
 });
+
+export const listenToShadowRootEvents = (rootEle, node) => {
+  const ctx = getContext(rootEle);
+  EVENTS.forEach(eventName => {
+    ctx.addEventListener(eventName, (...args) => {
+      const quill = instances.get(node);
+      if (quill && quill.emitter) {
+        quill.emitter.handleDOM(...args);
+      }
+    });
+  });
+};
 
 class Emitter extends EventEmitter {
   constructor() {

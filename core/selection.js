@@ -3,6 +3,7 @@ import cloneDeep from 'lodash.clonedeep';
 import isEqual from 'lodash.isequal';
 import Emitter from './emitter';
 import logger from './logger';
+import { getContext } from './utils';
 
 const debug = logger('quill:selection');
 
@@ -27,7 +28,7 @@ class Selection {
     this.lastNative = null;
     this.handleComposition();
     this.handleDragging();
-    this.emitter.listenDOM('selectionchange', document, () => {
+    this.emitter.listenDOM('selectionchange', getContext(this.root), () => {
       if (!this.mouseDown && !this.composing) {
         setTimeout(this.update.bind(this, Emitter.sources.USER), 1);
       }
@@ -90,10 +91,10 @@ class Selection {
   }
 
   handleDragging() {
-    this.emitter.listenDOM('mousedown', document.body, () => {
+    this.emitter.listenDOM('mousedown', getContext(this.root), () => {
       this.mouseDown = true;
     });
-    this.emitter.listenDOM('mouseup', document.body, () => {
+    this.emitter.listenDOM('mouseup', getContext(this.root), () => {
       this.mouseDown = false;
       this.update(Emitter.sources.USER);
     });
@@ -176,7 +177,7 @@ class Selection {
   }
 
   getNativeRange() {
-    const selection = document.getSelection();
+    const selection = getContext(this.root).getSelection();
     if (selection == null || selection.rangeCount <= 0) return null;
     const nativeRange = selection.getRangeAt(0);
     if (nativeRange == null) return null;
@@ -193,9 +194,10 @@ class Selection {
   }
 
   hasFocus() {
+    const context = getContext(this.root);
     return (
-      document.activeElement === this.root ||
-      contains(this.root, document.activeElement)
+      context.activeElement === this.root ||
+      contains(this.root, context.activeElement)
     );
   }
 
@@ -317,7 +319,7 @@ class Selection {
     ) {
       return;
     }
-    const selection = document.getSelection();
+    const selection = getContext(this.root).getSelection();
     if (selection == null) return;
     if (startNode != null) {
       if (!this.hasFocus()) this.root.focus();

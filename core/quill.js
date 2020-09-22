@@ -3,12 +3,13 @@ import cloneDeep from 'lodash.clonedeep';
 import merge from 'lodash.merge';
 import * as Parchment from 'parchment';
 import Editor from './editor';
-import Emitter from './emitter';
+import Emitter, { listenToShadowRootEvents } from './emitter';
 import Module from './module';
 import Selection, { Range } from './selection';
 import instances from './instances';
 import logger from './logger';
 import Theme from './theme';
+import { isInShadowRoot } from './utils';
 
 const debug = logger('quill');
 
@@ -115,6 +116,9 @@ class Quill {
     });
     this.setContents(contents);
     this.history.clear();
+    if (isInShadowRoot(this.scroll.domNode)) {
+      listenToShadowRootEvents(this.scroll.domNode, this.container);
+    }
     if (this.options.placeholder) {
       this.root.setAttribute('data-placeholder', this.options.placeholder);
     }
