@@ -1,13 +1,14 @@
 import './polyfill';
 import Delta from 'quill-delta';
 import Editor from './editor';
-import Emitter from './emitter';
+import Emitter, { listenToShadowRootEvents } from './emitter';
 import Module from './module';
 import Parchment from 'parchment';
 import Selection, { Range } from './selection';
 import extend from 'extend';
 import logger from './logger';
 import Theme from './theme';
+import { isInShadowRoot } from './utils';
 
 let debug = logger('quill');
 
@@ -100,6 +101,9 @@ class Quill {
     let contents = this.clipboard.convert(`<div class='ql-editor' style="white-space: normal;">${html}<p><br></p></div>`);
     this.setContents(contents);
     this.history.clear();
+    if (isInShadowRoot(this.scroll.domNode)) {
+      listenToShadowRootEvents(this.scroll.domNode, this.container);
+    }
     if (this.options.placeholder) {
       this.root.setAttribute('data-placeholder', this.options.placeholder);
     }
