@@ -5,11 +5,7 @@ const debug = logger('quill:utils');
 export const getContext = (rootEle) => {
   // const supportsShadowDOM = !!HTMLElement.prototype.attachShadow;
   const ctx = rootEle.getRootNode() || document;
-  if ('getSelection' in ctx) {
-    debug.info('getContext', ctx);
-    return ctx;
-  }
-  return document;
+  return ctx;
 };
 
 export const isInShadowRoot = (rootEle) => {

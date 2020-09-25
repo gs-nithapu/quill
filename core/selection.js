@@ -4,6 +4,7 @@ import equal from 'deep-equal';
 import Emitter from './emitter';
 import logger from './logger';
 import { getContext } from './utils';
+import * as shadowPoly from 'shadow-selection-polyfill';
 
 let debug = logger('quill:selection');
 
@@ -158,14 +159,51 @@ class Selection {
   }
 
   getNativeRange() {
-    const selection = getContext(this.root).getSelection();
+    const selection = this.getNativeSelection();
     if (selection == null || selection.rangeCount <= 0) return null;
-    let nativeRange = selection.getRangeAt(0);
+    let nativeRange = this.getShadowNativeRange(selection);
     if (nativeRange == null) return null;
     let range = this.normalizeNative(nativeRange);
     debug.info('getNativeRange', range);
     return range;
   }
+
+  getNativeSelection() {
+    const ctx = getContext(this.root);
+    if ('getSelection' in ctx) {
+      debug.info('getContext', ctx);
+      return ctx.getSelection();
+    }
+    // else if(/Safari/i.test(navigator.userAgent)) { // limit only to sfari
+    //   const range = shadowPoly.getRange(ctx);
+    //   if (range) {
+    //     const selection = {
+    //       removeAllRanges: function(){
+
+    //       },
+    //       getRangeAt: function(){
+    //         return range;
+    //       }
+    //     };
+    //     return selection;
+    //   }
+    // }
+    return document.getSelection();
+  }
+
+  getShadowNativeRange(selection) {
+    const ctx = getContext(this.root);
+    if ('getSelection' in ctx) {
+      return selection.getRangeAt(0);
+    } else if(/Safari/i.test(navigator.userAgent)) {
+      const range = shadowPoly.getRange(ctx);
+      if (range) {
+       return range;
+      }
+    }
+    return selection.getRangeAt(0);
+  }
+
 
   getRange() {
     let normalized = this.getNativeRange();
@@ -273,7 +311,7 @@ class Selection {
     if (startNode != null && (this.root.parentNode == null || startNode.parentNode == null || endNode.parentNode == null)) {
       return;
     }
-    const selection = getContext(this.root).getSelection();
+    const selection = this.getNativeSelection();
     if (selection == null) return;
     if (startNode != null) {
       if (!this.hasFocus()) this.root.focus();
