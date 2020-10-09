@@ -20,6 +20,12 @@ EVENTS.forEach(function(eventName) {
 export const listenToShadowRootEvents = (rootEle, node) => {
   const ctx = getContext(rootEle);
   EVENTS.forEach((eventName) => {
+    ctx.removeEventListener(eventName, (...args) => {
+      const quill = node.__quill;
+      if (quill && quill.emitter) {
+        quill.emitter.handleDOM(...args);
+      }
+    });
     ctx.addEventListener(eventName, (...args) => {
       const quill = node.__quill;
       if (quill && quill.emitter) {
