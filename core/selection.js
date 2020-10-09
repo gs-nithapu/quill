@@ -174,7 +174,7 @@ class Selection {
       debug.info('getContext', ctx);
       return ctx.getSelection();
     }
-    // else if(/Safari/i.test(navigator.userAgent)) { // limit only to sfari
+    // else if((/^((?!chrome).)*safari/i.test(navigator.userAgent))) { // limit only to sfari
     //   const range = shadowPoly.getRange(ctx);
     //   if (range) {
     //     const selection = {
@@ -195,7 +195,7 @@ class Selection {
     const ctx = getContext(this.root);
     if ('getSelection' in ctx) {
       return selection.getRangeAt(0);
-    } else if(/Safari/i.test(navigator.userAgent)) {
+    } else if((/^((?!chrome).)*safari/i.test(navigator.userAgent))) {
       const range = shadowPoly.getRange(ctx);
       if (range) {
        return range;
