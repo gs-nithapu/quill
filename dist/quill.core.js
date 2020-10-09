@@ -3175,7 +3175,7 @@ var Selection = function () {
         debug.info('getContext', ctx);
         return ctx.getSelection();
       }
-      // else if(/Safari/i.test(navigator.userAgent)) { // limit only to sfari
+      // else if((/^((?!chrome).)*safari/i.test(navigator.userAgent))) { // limit only to sfari
       //   const range = shadowPoly.getRange(ctx);
       //   if (range) {
       //     const selection = {
@@ -3197,7 +3197,7 @@ var Selection = function () {
       var ctx = (0, _utils.getContext)(this.root);
       if ('getSelection' in ctx) {
         return selection.getRangeAt(0);
-      } else if (/Safari/i.test(navigator.userAgent)) {
+      } else if (/^((?!chrome).)*safari/i.test(navigator.userAgent)) {
         var range = shadowPoly.getRange(ctx);
         if (range) {
           return range;
