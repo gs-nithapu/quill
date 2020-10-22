@@ -72,7 +72,7 @@ class Scroll extends Parchment.Scroll {
   }
 
   formatAt(index, length, format, value) {
-    if (this.whitelist != null && !this.whitelist[format]) return;
+    // if (this.whitelist != null && !this.whitelist[format]) return;
     super.formatAt(index, length, format, value);
     this.optimize();
   }

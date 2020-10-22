@@ -988,7 +988,7 @@ var Block = function (_Parchment$Block) {
 }(_parchment2.default.Block);
 
 Block.blotName = 'block';
-Block.tagName = 'P';
+Block.tagName = ['P', 'DIV'];
 Block.defaultChild = 'break';
 Block.allowedChildren = [_inline2.default, _parchment2.default.Embed, _text2.default];
 
@@ -4526,7 +4526,7 @@ var Scroll = function (_Parchment$Scroll) {
   }, {
     key: 'formatAt',
     value: function formatAt(index, length, format, value) {
-      if (this.whitelist != null && !this.whitelist[format]) return;
+      // if (this.whitelist != null && !this.whitelist[format]) return;
       _get(Scroll.prototype.__proto__ || Object.getPrototypeOf(Scroll.prototype), 'formatAt', this).call(this, index, length, format, value);
       this.optimize();
     }
@@ -12070,8 +12070,8 @@ _core2.default.register({
 
   'formats/background': _background.BackgroundStyle,
   'formats/color': _color.ColorStyle,
-  'formats/font': _font.FontClass,
-  'formats/size': _size.SizeClass,
+  'formats/font': _font.FontStyle,
+  'formats/size': _size.SizeStyle,
 
   'formats/blockquote': _blockquote2.default,
   'formats/code-block': _code2.default,

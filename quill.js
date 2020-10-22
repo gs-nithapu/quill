@@ -65,8 +65,8 @@ Quill.register({
 
   'formats/background': BackgroundStyle,
   'formats/color': ColorStyle,
-  'formats/font': FontClass,
-  'formats/size': SizeClass,
+  'formats/font': FontStyle,
+  'formats/size': SizeStyle,
 
   'formats/blockquote': Blockquote,
   'formats/code-block': CodeBlock,
