@@ -7,6 +7,7 @@ import Parchment from 'parchment';
 import Quill from '../core/quill';
 import logger from '../core/logger';
 import Module from '../core/module';
+import { clearFormat } from '../core/utils';
 
 let debug = logger('quill:keyboard');
 
@@ -39,6 +40,7 @@ class Keyboard extends Module {
     });
     this.addBinding({ key: Keyboard.keys.ENTER, shiftKey: null }, handleEnter);
     this.addBinding({ key: Keyboard.keys.ENTER, metaKey: null, ctrlKey: null, altKey: null }, function() {});
+    this.addBinding({ key: 'F', metaKey: true, shiftKey: true}, clearFormatting);
     if (/Firefox/i.test(navigator.userAgent)) {
       // Need to handle delete and backspace for Firefox in the general case #1171
       this.addBinding({ key: Keyboard.keys.BACKSPACE }, { collapsed: true }, handleBackspace);
@@ -140,9 +142,50 @@ Keyboard.keys = {
 
 Keyboard.DEFAULTS = {
   bindings: {
-    'bold'      : makeFormatHandler('bold'),
-    'italic'    : makeFormatHandler('italic'),
-    'underline' : makeFormatHandler('underline'),
+    'bold'      : makeFormatHandler({
+      'format': 'bold',
+      'formatName': 'bold',
+      'toggle': true
+    }),
+    'italic'    : makeFormatHandler({
+      'format': 'italic',
+      'formatName': 'italic',
+      'toggle': true
+    }),
+    'underline' : makeFormatHandler({
+      'format': 'underline',
+      'formatName': 'underline',
+      'toggle': true
+    }),
+    'unordered-item': makeFormatHandler({
+      'format': '8',
+      'formatName': 'list',
+      'value': "bullet",
+      'shiftKey': true,
+      'toggle': true
+    }),
+    'ordered-item': makeFormatHandler({
+      'format': '7',
+      'formatName': 'list',
+      'value': "ordered",
+      'shiftKey': true,
+      'toggle': true
+    }),
+    'align-left': makeFormatHandler({
+      'format': 'L',
+      'formatName': 'align',
+      'value': ""
+    }),
+    'align-right': makeFormatHandler({
+      'format': 'R',
+      'formatName': 'align',
+      'value': "right"
+    }),
+    'align-center': makeFormatHandler({
+      'format': 'E',
+      'formatName': 'align',
+      'value': "center"
+    }),
     'indent': {
       // highlight tab or tab at beginning of list, indent or blockquote
       key: Keyboard.keys.TAB,
@@ -377,6 +420,10 @@ function handleDelete(range, context) {
   }
 }
 
+function clearFormatting() {
+  clearFormat(this.quill);
+}
+
 function handleDeleteRange(range) {
   let lines = this.quill.getLines(range);
   let formats = {};
@@ -457,12 +504,17 @@ function makeCodeBlockHandler(indent) {
   };
 }
 
-function makeFormatHandler(format) {
+function makeFormatHandler(options={}) {
   return {
-    key: format[0].toUpperCase(),
+    key: options.format[0].toUpperCase(),
     shortKey: true,
+    shiftKey: options.shiftKey,
     handler: function(range, context) {
-      this.quill.format(format, !context.format[format], Quill.sources.USER);
+      let val = typeof(options.value) === "undefined" ? true : options.value;
+      if(options.toggle && context.format[options.formatName] && context.format[options.formatName] === val) {
+        val = false;
+      }
+      this.quill.format(options.formatName, val, Quill.sources.USER);
     }
   };
 }

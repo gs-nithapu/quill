@@ -26,7 +26,7 @@ class Editor {
     this.scroll.batchStart();
     delta = normalizeDelta(delta);
     delta.reduce((index, op) => {
-      let length = op.retain || op.delete || op.insert.length || 1;
+      let length = op.retain || op.delete || (op.insert && op.insert.length) || 0;
       let attributes = op.attributes || {};
       if (op.insert != null) {
         if (typeof op.insert === 'string') {
@@ -63,7 +63,7 @@ class Editor {
         this.scroll.deleteAt(index, op.delete);
         return index;
       }
-      return index + (op.retain || op.insert.length || 1);
+      return index + (op.retain || (op.insert && op.insert.length) || 0);
     }, 0);
     this.scroll.batchEnd();
     return this.update(delta);
