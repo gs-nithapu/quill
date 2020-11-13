@@ -2625,7 +2625,7 @@ var Editor = function () {
       this.scroll.batchStart();
       delta = normalizeDelta(delta);
       delta.reduce(function (index, op) {
-        var length = op.retain || op.delete || op.insert && op.insert.length || 0;
+        var length = op.retain || op.delete || op.insert && op.insert.length || 1;
         var attributes = op.attributes || {};
         if (op.insert != null) {
           if (typeof op.insert === 'string') {
@@ -2670,7 +2670,7 @@ var Editor = function () {
           _this.scroll.deleteAt(index, op.delete);
           return index;
         }
-        return index + (op.retain || op.insert && op.insert.length || 0);
+        return index + (op.retain || op.insert && op.insert.length || 1);
       }, 0);
       this.scroll.batchEnd();
       return this.update(delta);
